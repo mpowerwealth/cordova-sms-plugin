@@ -168,13 +168,9 @@ public class Sms extends CordovaPlugin {
         sendIntent = new Intent(Intent.ACTION_SEND);
         sendIntent.putExtra("sms_body", message);
         sendIntent.putExtra("address", phoneNumber);
-        
-        try {            
-            byte[] decodedString = Base64.getDecoder().decode(imageDataBytes);
-            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+              
+        byte[] decodedString = Base64.getDecoder().decode(imageDataBytes);
+        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
         String saveFilePath = cordova.getContext().getExternalCacheDir()+"";
         File dir = new File(saveFilePath);
