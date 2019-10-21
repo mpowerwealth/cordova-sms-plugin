@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.webkit.MimeTypeMap;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
