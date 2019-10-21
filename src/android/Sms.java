@@ -33,6 +33,61 @@ import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+
+import com.example.android.R;
+import com.example.android.mmslib.ContentType;
+import com.example.android.mmslib.InvalidHeaderValueException;
+import com.example.android.mmslib.pdu.CharacterSets;
+import com.example.android.mmslib.pdu.EncodedStringValue;
+import com.example.android.mmslib.pdu.GenericPdu;
+import com.example.android.mmslib.pdu.PduBody;
+import com.example.android.mmslib.pdu.PduComposer;
+import com.example.android.mmslib.pdu.PduHeaders;
+import com.example.android.mmslib.pdu.PduParser;
+import com.example.android.mmslib.pdu.PduPart;
+import com.example.android.mmslib.pdu.RetrieveConf;
+import com.example.android.mmslib.pdu.SendConf;
+import com.example.android.mmslib.pdu.SendReq;
+
+import android.Manifest;
+import android.app.Activity;
+import android.app.PendingIntent;
+import android.app.PendingIntent.CanceledException;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.telephony.PhoneNumberUtils;
+import android.telephony.SmsManager;
+import android.telephony.TelephonyManager;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Random;
+
 public class Sms extends CordovaPlugin {
 
     public final String ACTION_SEND_SMS = "send";
