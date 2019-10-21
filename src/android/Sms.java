@@ -80,10 +80,10 @@ public class Sms extends CordovaPlugin {
     }
 
     private boolean hasPermission() {
-        return cordova.hasPermission(android.Manifest.permission.SEND_SMS) && cordova.hasPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        return cordova.hasPermission(android.Manifest.permission.SEND_SMS) && cordova.hasPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
 		//&& cordova.hasPermission(android.Manifest.permission.RECEIVE_SMS)
 		//&& cordova.hasPermission(android.Manifest.permission.RECEIVE_MMS)
-		//&& cordova.hasPermission(android.Manifest.permission.WRITE_SMS)
+		&& cordova.hasPermission(android.Manifest.permission.WRITE_SMS);
 		//&& cordova.hasPermission(android.Manifest.permission.READ_SMS)
 		//&& cordova.hasPermission(android.Manifest.permission.READ_PHONE_STATE);
     }
@@ -168,12 +168,6 @@ public class Sms extends CordovaPlugin {
         StrictMode.setVmPolicy(builder.build());
 
         String imageDataBytes = imageFile.substring(imageFile.indexOf(",")+1);
-
-
-        Intent sendIntent;
-        sendIntent = new Intent(Intent.ACTION_SEND);
-        sendIntent.putExtra("sms_body", message);
-        sendIntent.putExtra("address", phoneNumber);
               
         byte[] decodedString = Base64.getDecoder().decode(imageDataBytes);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
@@ -185,8 +179,8 @@ public class Sms extends CordovaPlugin {
         if (!dir.exists()) {
             dir.mkdirs();
         }
-
-        String imageFileName = "cashToSendMms.png";
+		
+        String imageFileName = "selfie" + java.util.UUID.randomUUID().toString() + ".png";
 
         File file = new File(dir, imageFileName);
 
@@ -210,6 +204,11 @@ public class Sms extends CordovaPlugin {
             e.printStackTrace();
         }
 
+		Intent sendIntent;
+        sendIntent = new Intent(Intent.ACTION_SEND);
+		sendIntent.setClassName("com.android.mms","com.android.mms.ui.ComposeMessageActivity");
+        sendIntent.putExtra("sms_body", message);
+        sendIntent.putExtra("address", phoneNumber);
 
         sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(saveFilePath + "/" + imageFileName)));
 		String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(saveFilePath + "/" + imageFileName));
