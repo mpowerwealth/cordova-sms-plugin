@@ -79,12 +79,12 @@ public class Sms extends CordovaPlugin {
     }
 
     private boolean hasPermission() {
-        return cordova.hasPermission(android.Manifest.permission.SEND_SMS) && cordova.hasPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-		&& cordova.hasPermission(android.Manifest.permission.RECEIVE_SMS)
-		&& cordova.hasPermission(android.Manifest.permission.RECEIVE_MMS)
-		&& cordova.hasPermission(android.Manifest.permission.WRITE_SMS)
-		&& cordova.hasPermission(android.Manifest.permission.READ_SMS)
-		&& cordova.hasPermission(android.Manifest.permission.READ_PHONE_STATE);
+        return cordova.hasPermission(android.Manifest.permission.SEND_SMS) && cordova.hasPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+		//&& cordova.hasPermission(android.Manifest.permission.RECEIVE_SMS)
+		//&& cordova.hasPermission(android.Manifest.permission.RECEIVE_MMS)
+		//&& cordova.hasPermission(android.Manifest.permission.WRITE_SMS)
+		//&& cordova.hasPermission(android.Manifest.permission.READ_SMS)
+		//&& cordova.hasPermission(android.Manifest.permission.READ_PHONE_STATE);
     }
 
     private void requestPermission(int requestCode) {
@@ -211,7 +211,9 @@ public class Sms extends CordovaPlugin {
 
 
         sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(saveFilePath + "/" + imageFileName)));
-        sendIntent.setType("image/*");
+		String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(saveFilePath + "/" + imageFileName));
+        sendIntent.setType(mimeType);
+		//sendIntent.setType("image/*");
         this.cordova.getActivity().startActivity(sendIntent);
     }
 
