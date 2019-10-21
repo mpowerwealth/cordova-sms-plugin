@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.webkit.MimeTypeMap;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -33,61 +32,6 @@ import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-
-import com.example.android.R;
-import com.example.android.mmslib.ContentType;
-import com.example.android.mmslib.InvalidHeaderValueException;
-import com.example.android.mmslib.pdu.CharacterSets;
-import com.example.android.mmslib.pdu.EncodedStringValue;
-import com.example.android.mmslib.pdu.GenericPdu;
-import com.example.android.mmslib.pdu.PduBody;
-import com.example.android.mmslib.pdu.PduComposer;
-import com.example.android.mmslib.pdu.PduHeaders;
-import com.example.android.mmslib.pdu.PduParser;
-import com.example.android.mmslib.pdu.PduPart;
-import com.example.android.mmslib.pdu.RetrieveConf;
-import com.example.android.mmslib.pdu.SendConf;
-import com.example.android.mmslib.pdu.SendReq;
-
-import android.Manifest;
-import android.app.Activity;
-import android.app.PendingIntent;
-import android.app.PendingIntent.CanceledException;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.ContentResolver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
-import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.telephony.PhoneNumberUtils;
-import android.telephony.SmsManager;
-import android.telephony.TelephonyManager;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Random;
-
 public class Sms extends CordovaPlugin {
 
     public final String ACTION_SEND_SMS = "send";
@@ -105,9 +49,6 @@ public class Sms extends CordovaPlugin {
     private CallbackContext callbackContext;
 
     private JSONArray args;
-
-	private File mSendFile;
-	private Random mRandom = new Random();
 
     @Override
     public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
@@ -138,12 +79,7 @@ public class Sms extends CordovaPlugin {
     }
 
     private boolean hasPermission() {
-        return cordova.hasPermission(android.Manifest.permission.SEND_SMS) && cordova.hasPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-		//&& cordova.hasPermission(android.Manifest.permission.RECEIVE_SMS)
-		//&& cordova.hasPermission(android.Manifest.permission.RECEIVE_MMS)
-		//&& cordova.hasPermission(android.Manifest.permission.WRITE_SMS);
-		//&& cordova.hasPermission(android.Manifest.permission.READ_SMS)
-		//&& cordova.hasPermission(android.Manifest.permission.READ_PHONE_STATE);
+        return cordova.hasPermission(android.Manifest.permission.SEND_SMS) && cordova.hasPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) ;
     }
 
     private void requestPermission(int requestCode) {
@@ -187,12 +123,11 @@ public class Sms extends CordovaPlugin {
                     return;
                 }
                 if (method.equalsIgnoreCase("INTENT")) {
-                    //invokeSMSIntent(phoneNumber, message, image);
-					sendMessage(phoneNumber, "", message, image);
+                    invokeSMSIntent(phoneNumber, message, image);
                     // always passes success back to the app
                     callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
                 } else {
-				    send(callbackContext, phoneNumber, message);					
+                    send(callbackContext, phoneNumber, message);
                 }
             } catch (JSONException ex) {
                 callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION));
@@ -205,7 +140,7 @@ public class Sms extends CordovaPlugin {
         return ctx.getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY);
     }
 
-	
+
     private void invokeSMSIntentNoImage(String phoneNumber, String message) {
         Intent sendIntent;
         sendIntent = new Intent(Intent.ACTION_VIEW);
@@ -227,6 +162,12 @@ public class Sms extends CordovaPlugin {
         StrictMode.setVmPolicy(builder.build());
 
         String imageDataBytes = imageFile.substring(imageFile.indexOf(",")+1);
+
+
+        Intent sendIntent;
+        sendIntent = new Intent(Intent.ACTION_SEND);
+        sendIntent.putExtra("sms_body", message);
+        sendIntent.putExtra("address", phoneNumber);
               
         byte[] decodedString = Base64.getDecoder().decode(imageDataBytes);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
@@ -238,8 +179,8 @@ public class Sms extends CordovaPlugin {
         if (!dir.exists()) {
             dir.mkdirs();
         }
-		
-        String imageFileName = "selfie" + java.util.UUID.randomUUID().toString() + ".png";
+
+        String imageFileName = "cashToSendMms.png";
 
         File file = new File(dir, imageFileName);
 
@@ -263,17 +204,9 @@ public class Sms extends CordovaPlugin {
             e.printStackTrace();
         }
 
-		Intent sendIntent;
-        sendIntent = new Intent(Intent.ACTION_SEND);
-		//sendIntent.setClassName("com.android.mms","com.android.mms.ui.ComposeMessageActivity");
 
         sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(saveFilePath + "/" + imageFileName)));
-		//String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(saveFilePath + "/" + imageFileName));
-        //sendIntent.setType(mimeType);
-		sendIntent.setType("image/*");
-		sendIntent.putExtra("sms_body", message);
-        sendIntent.putExtra("address", phoneNumber);
-		
+        sendIntent.setType("image/*");
         this.cordova.getActivity().startActivity(sendIntent);
     }
 
@@ -326,160 +259,9 @@ public class Sms extends CordovaPlugin {
             for (int i = 0; i < parts.size(); i++) {
                 sentIntents.add(sentIntent);
             }
-			manager.sendMultipartTextMessage(phoneNumber, null, parts, sentIntents, null);
+            manager.sendMultipartTextMessage(phoneNumber, null, parts, sentIntents, null);
         } else {
             manager.sendTextMessage(phoneNumber, null, message, sentIntent, null);
         }
     }
-
-
-	private void sendMessage(final String recipients, final String subject, final String text, String imageFile) {
-        Log.d(TAG, "Sending");
-        final String fileName = "send." + String.valueOf(Math.abs(mRandom.nextLong())) + ".dat";
-        mSendFile = new File(getCacheDir(), fileName);
-
-        // Making RPC call in non-UI thread
-        AsyncTask.THREAD_POOL_EXECUTOR.execute(new Runnable() {
-            @Override
-            public void run() {
-                Bitmap imageToSend = null;
-
-				String imageDataBytes = imageFile.substring(imageFile.indexOf(",")+1);
-				byte[] decodedString = Base64.getDecoder().decode(imageDataBytes);
-				Bitmap imageToSend = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-
-
-                final byte[] pdu = buildPdu(Sms.this, recipients, subject, text, imageToSend);
-                Uri writerUri = (new Uri.Builder())
-                        .authority("com.example.android.apis.os.MmsFileProvider")
-                        .path(fileName)
-                        .scheme(ContentResolver.SCHEME_CONTENT)
-                        .build();
-                
-                FileOutputStream writer = null;
-                Uri contentUri = null;
-                try {
-                    writer = new FileOutputStream(mSendFile);
-                    writer.write(pdu);
-                    contentUri = writerUri;
-                } catch (final IOException e) {
-                    Log.e(TAG, "Error writing send file", e);
-                } finally {
-                    if (writer != null) {
-                        try {
-                            writer.close();
-                        } catch (IOException e) {
-                        }
-                    }
-                }
-
-                if (contentUri != null) {
-                    SmsManager.getDefault().sendMultimediaMessage(getApplicationContext(),
-                            contentUri, null/*locationUrl*/, null/*configOverrides*/,
-                            null);
-                } else {
-                    Log.e(TAG, "Error writing sending Mms");                    
-                }
-            }
-        });
-    }
-
-	private static byte[] buildPdu(Context context, String recipients, String subject, String text, Bitmap imageToSend) {
-        final SendReq req = new SendReq();
-        // From, per spec
-        final String lineNumber = getSimNumber(context);
-        if (!TextUtils.isEmpty(lineNumber)) {
-            req.setFrom(new EncodedStringValue(lineNumber));
-        }
-        // To
-        EncodedStringValue[] encodedNumbers =
-                EncodedStringValue.encodeStrings(recipients.split(" "));
-        if (encodedNumbers != null) {
-            req.setTo(encodedNumbers);
-        }
-        // Subject
-        if (!TextUtils.isEmpty(subject)) {
-            req.setSubject(new EncodedStringValue(subject));
-        }
-        // Date
-        req.setDate(System.currentTimeMillis() / 1000);
-        // Body
-        PduBody body = new PduBody();
-        int size = 0;
-
-        // Add text part. Always add a smil part for compatibility, without it there
-        // may be issues on some carriers/client apps
-        size += addTextPart(body, text, true/* add text smil */);
-
-        // Add image part
-        if (imageToSend != null)
-            size += addImagePart(body, imageToSend);
-
-        req.setBody(body);
-        // Message size
-        req.setMessageSize(size);
-        // Message class
-        req.setMessageClass(PduHeaders.MESSAGE_CLASS_PERSONAL_STR.getBytes());
-        // Expiry
-        req.setExpiry(DEFAULT_EXPIRY_TIME);
-        try {
-            // Priority
-            req.setPriority(DEFAULT_PRIORITY);
-            // Delivery report
-            req.setDeliveryReport(PduHeaders.VALUE_NO);
-            // Read report
-            req.setReadReport(PduHeaders.VALUE_NO);
-        } catch (InvalidHeaderValueException e) {
-        }
-
-        return new PduComposer(context, req).make();
-    }
-
-    private static int addTextPart(PduBody pb, String message, boolean addTextSmil) {
-        final PduPart part = new PduPart();
-        // Set Charset if it's a text media.
-        part.setCharset(CharacterSets.UTF_8);
-        // Set Content-Type.
-        part.setContentType(ContentType.TEXT_PLAIN.getBytes());
-        // Set Content-Location.
-        part.setContentLocation(TEXT_PART_FILENAME.getBytes());
-        int index = TEXT_PART_FILENAME.lastIndexOf(".");
-        String contentId = (index == -1) ? TEXT_PART_FILENAME
-                : TEXT_PART_FILENAME.substring(0, index);
-        part.setContentId(contentId.getBytes());
-        part.setData(message.getBytes());
-        pb.addPart(part);
-        if (addTextSmil) {
-            final String smil = String.format(sSmilText, TEXT_PART_FILENAME);
-            addSmilPart(pb, smil);
-        }
-        return part.getData().length;
-    }
-
-    private static int addImagePart(PduBody pb, Bitmap imageToSend) {
-        final PduPart part = new PduPart();
-
-        //add image part
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        imageToSend.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        byte[] imageBytes = stream.toByteArray();
-        imageToSend.recycle();
-
-        part.setName(("image_" + System.currentTimeMillis()).getBytes());
-        part.setContentType("image/jpeg".getBytes());
-        part.setData(imageBytes);
-
-        pb.addPart(part);
-        return part.getData().length;
-    }
-
-	private static void addSmilPart(PduBody pb, String smil) {
-        final PduPart smilPart = new PduPart();
-        smilPart.setContentId("smil".getBytes());
-        smilPart.setContentLocation("smil.xml".getBytes());
-        smilPart.setContentType(ContentType.APP_SMIL.getBytes());
-        smilPart.setData(smil.getBytes());
-        pb.addPart(0, smilPart);
-    }
-
 }
