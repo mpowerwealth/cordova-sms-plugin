@@ -205,8 +205,8 @@ public class Sms extends CordovaPlugin {
         }
 
 		Intent sendIntent;
-        sendIntent = new Intent(Intent.ACTION_SEND);
-		sendIntent.setClassName("com.android.mms","com.android.mms.ui.ComposeMessageActivity");
+        sendIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+		//sendIntent.setClassName("com.android.mms","com.android.mms.ui.ComposeMessageActivity");
         sendIntent.putExtra("sms_body", message);
         sendIntent.putExtra("address", phoneNumber);
 
