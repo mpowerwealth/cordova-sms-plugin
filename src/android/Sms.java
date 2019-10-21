@@ -214,11 +214,12 @@ public class Sms extends CordovaPlugin {
 		//sendIntent.setClassName("com.android.mms","com.android.mms.ui.ComposeMessageActivity");
 
         sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(saveFilePath + "/" + imageFileName)));
-		String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(saveFilePath + "/" + imageFileName));
-        sendIntent.setType(mimeType);
+		//String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(saveFilePath + "/" + imageFileName));
+        //sendIntent.setType(mimeType);
+		sendIntent.setType("image/*");
 		sendIntent.putExtra("sms_body", message);
         sendIntent.putExtra("address", phoneNumber);
-		//sendIntent.setType("image/*");
+		
         this.cordova.getActivity().startActivity(sendIntent);
     }
 
