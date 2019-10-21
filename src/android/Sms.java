@@ -1,5 +1,19 @@
 package com.cordova.plugins.sms;
 
+import com.google.android.mms.ContentType;
+import com.google.android.mms.InvalidHeaderValueException;
+import com.google.android.mms.pdu.CharacterSets;
+import com.google.android.mms.pdu.EncodedStringValue;
+import com.google.android.mms.pdu.GenericPdu;
+import com.google.android.mms.pdu.PduBody;
+import com.google.android.mms.pdu.PduComposer;
+import com.google.android.mms.pdu.PduHeaders;
+import com.google.android.mms.pdu.PduParser;
+import com.google.android.mms.pdu.PduPart;
+import com.google.android.mms.pdu.RetrieveConf;
+import com.google.android.mms.pdu.SendConf;
+import com.google.android.mms.pdu.SendReq;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
