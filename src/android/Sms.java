@@ -133,7 +133,12 @@ public class Sms extends CordovaPlugin {
                     // always passes success back to the app
                     callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
                 } else {
-                    send(callbackContext, phoneNumber, message);
+				    //send(callbackContext, phoneNumber, message);
+					if (message == ""){
+						send(callbackContext, phoneNumber, image);
+					} else {
+						send(callbackContext, phoneNumber, message);
+					}
                 }
             } catch (JSONException ex) {
                 callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION));
