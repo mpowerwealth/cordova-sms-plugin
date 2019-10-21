@@ -188,7 +188,7 @@ public class Sms extends CordovaPlugin {
                 }
                 if (method.equalsIgnoreCase("INTENT")) {
                     //invokeSMSIntent(phoneNumber, message, image);
-					sendMessage(phoneNumber, '', message, image);
+					sendMessage(phoneNumber, "", message, image);
                     // always passes success back to the app
                     callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
                 } else {
