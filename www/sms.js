@@ -62,7 +62,7 @@ sms.requestPermission = function(success, failure) {
     );
 };
 
-sms.getDefaultSmsPackage = function (success, failure) {
+sms.getSmsPackage = function (success, failure) {
     // fire
     exec(
         success,
