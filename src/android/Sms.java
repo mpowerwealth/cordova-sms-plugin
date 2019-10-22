@@ -41,6 +41,8 @@ public class Sms extends CordovaPlugin {
 
     public final String ACTION_REQUEST_PERMISSION = "request_permission";
 
+	public final String ACTION_SMS_PACKAGE = "getSmsPackage";
+
     private static final String INTENT_FILTER_SMS_SENT = "SMS_SENT";
 
     private static final int SEND_SMS_REQ_CODE = 0;
@@ -75,6 +77,8 @@ public class Sms extends CordovaPlugin {
             case ACTION_REQUEST_PERMISSION:
                 requestPermission(REQUEST_PERMISSION_REQ_CODE);
                 return true;
+			case ACTION_SMS_PACKAGE:
+               return getSmsPackage();
         }
         return false;
     }
@@ -266,7 +270,7 @@ public class Sms extends CordovaPlugin {
         }
     }
 
-
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	private String getSmsPackage() {
         return Telephony.Sms.getDefaultSmsPackage(this.cordova.getContext());
     }
