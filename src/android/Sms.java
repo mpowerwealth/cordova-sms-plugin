@@ -78,7 +78,8 @@ public class Sms extends CordovaPlugin {
                 requestPermission(REQUEST_PERMISSION_REQ_CODE);
                 return true;
 			case ACTION_SMS_PACKAGE:
-               return getSmsPackage();
+                getSmsPackage();
+				return true;
         }
         return false;
     }
