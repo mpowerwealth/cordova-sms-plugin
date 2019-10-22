@@ -18,7 +18,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.telephony.SmsManager;
-import android.telephony;
+import android.telephony.Sms;
 
 import java.io.File;
 import java.io.FileNotFoundException;
