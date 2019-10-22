@@ -68,7 +68,7 @@ sms.getDefaultSmsPackage = function (success, failure) {
         success,
         failure,
         'Sms',
-        'getDefaultSmsPackage', []
+        'getSmsPackage', []
     );
 };
 
