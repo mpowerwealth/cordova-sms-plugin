@@ -1,5 +1,5 @@
 ﻿package com.cordova.plugins.sms;
-​
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -9,48 +9,48 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-​
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
-​
+
 import android.os.Environment;
 import android.os.StrictMode;
 import android.telephony.SmsManager;
 import android.telephony;
-​
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
-​
+
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
-​
+
 public class Sms extends CordovaPlugin {
-​
+
     public final String ACTION_SEND_SMS = "send";
-​
+
     public final String ACTION_HAS_PERMISSION = "has_permission";
-​
+
     public final String ACTION_REQUEST_PERMISSION = "request_permission";
-​
+
     private static final String INTENT_FILTER_SMS_SENT = "SMS_SENT";
-​
+
     private static final int SEND_SMS_REQ_CODE = 0;
-​
+
     private static final int REQUEST_PERMISSION_REQ_CODE = 1;
-​
+
     private CallbackContext callbackContext;
-​
+
     private JSONArray args;
-​
+
     @Override
     public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
         this.callbackContext = callbackContext;
@@ -78,16 +78,16 @@ public class Sms extends CordovaPlugin {
         }
         return false;
     }
-​
+
     private boolean hasPermission() {
         return cordova.hasPermission(android.Manifest.permission.SEND_SMS) && cordova.hasPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) ;
     }
-​
+
     private void requestPermission(int requestCode) {
         String[] permissions = {android.Manifest.permission.SEND_SMS, android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
         cordova.requestPermissions(this, requestCode, permissions);
     }
-​
+
     public void onRequestPermissionResult(int requestCode, String[] permissions, int[] grantResults) {
         for (int r : grantResults) {
             if (r == PackageManager.PERMISSION_DENIED) {
@@ -101,7 +101,7 @@ public class Sms extends CordovaPlugin {
         }
         callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, true));
     }
-​
+
     private void sendSMS() {
         cordova.getThreadPool().execute(() -> {
             try {
@@ -114,7 +114,7 @@ public class Sms extends CordovaPlugin {
                 String image = args.getString(2);
                 String method = args.getString(3);
                 boolean replaceLineBreaks = Boolean.parseBoolean(args.getString(4));
-​
+
                 // replacing \n by new line if the parameter replaceLineBreaks is set to true
                 if (replaceLineBreaks) {
                     message = message.replace("\\n", System.getProperty("line.separator"));
@@ -135,13 +135,13 @@ public class Sms extends CordovaPlugin {
             }
         });
     }
-​
+
     private boolean checkSupport() {
         Activity ctx = this.cordova.getActivity();
         return ctx.getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY);
     }
-​
-​
+
+
     private void invokeSMSIntentNoImage(String phoneNumber, String message) {
         Intent sendIntent;
         sendIntent = new Intent(Intent.ACTION_VIEW);
@@ -150,21 +150,21 @@ public class Sms extends CordovaPlugin {
         sendIntent.setData(Uri.parse("smsto:" + Uri.encode(phoneNumber)));
         this.cordova.getActivity().startActivity(sendIntent);
     }
-​
-​
+
+
     @SuppressLint("NewApi")
     private void invokeSMSIntent(String phoneNumber, String message, String imageFile) {
         if (imageFile.equals("")) {
             invokeSMSIntentNoImage(phoneNumber, message);
             return;
         }
-​
+
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
-​
+
         String imageDataBytes = imageFile.substring(imageFile.indexOf(",")+1);
-​
-​
+
+
         Intent sendIntent;
         sendIntent = new Intent(Intent.ACTION_SEND);
         sendIntent.putExtra("sms_body", message);
@@ -172,19 +172,19 @@ public class Sms extends CordovaPlugin {
               
         byte[] decodedString = Base64.getDecoder().decode(imageDataBytes);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-​
+
         String saveFilePath = cordova.getContext().getExternalCacheDir()+"";
         File dir = new File(saveFilePath);
-​
-​
+
+
         if (!dir.exists()) {
             dir.mkdirs();
         }
-​
+
         String imageFileName = "selfie_" + java.util.UUID.randomUUID().toString() + ".png";
-​
+
         File file = new File(dir, imageFileName);
-​
+
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -192,7 +192,7 @@ public class Sms extends CordovaPlugin {
                 e.printStackTrace();
             }
         }
-​
+
         FileOutputStream fOut = null;
         try {
             fOut = new FileOutputStream(file);
@@ -204,24 +204,24 @@ public class Sms extends CordovaPlugin {
         } catch (IOException e) {
             e.printStackTrace();
         }
-​
-​
+
+
         sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(saveFilePath + "/" + imageFileName)));
         sendIntent.setType("image/*");
         this.cordova.getActivity().startActivity(sendIntent);
     }
-​
-​
+
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void send(final CallbackContext callbackContext, String phoneNumber, String message) {
         SmsManager manager = SmsManager.getDefault();
         final ArrayList<String> parts = manager.divideMessage(message);
-​
+
         final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-​
+
             boolean anyError = false; //use to detect if one of the parts failed
             int partsCount = parts.size(); //number of parts to send
-​
+
             @Override
             public void onReceive(Context context, Intent intent) {
                 switch (getResultCode()) {
@@ -247,13 +247,13 @@ public class Sms extends CordovaPlugin {
                 }
             }
         };
-​
+
         // randomize the intent filter action to avoid using the same receiver
         String intentFilterAction = INTENT_FILTER_SMS_SENT + java.util.UUID.randomUUID().toString();
         this.cordova.getActivity().registerReceiver(broadcastReceiver, new IntentFilter(intentFilterAction));
-​
+
         PendingIntent sentIntent = PendingIntent.getBroadcast(this.cordova.getActivity(), 0, new Intent(intentFilterAction), 0);
-​
+
         // depending on the number of parts we send a text message or multi parts
         if (parts.size() > 1) {
             ArrayList<PendingIntent> sentIntents = new ArrayList<>();
@@ -265,7 +265,7 @@ public class Sms extends CordovaPlugin {
             manager.sendTextMessage(phoneNumber, null, message, sentIntent, null);
         }
     }
-	
+
 	public string getDefaultSmsPackage() {
 		return Telephony.Sms.getDefaultSmsPackage(this);
 	}
