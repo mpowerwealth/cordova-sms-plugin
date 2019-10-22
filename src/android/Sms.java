@@ -18,7 +18,6 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.telephony.SmsManager;
-import android.provider.Telephony.Sms;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -123,7 +122,7 @@ public class Sms extends CordovaPlugin {
                     callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, "SMS not supported on this platform"));
                     return;
                 }
-                if (method.equalsIgnoreCase("INTENT") && !(Telephony.Sms.getDefaultSmsPackage(this).equals("com.verizon.messaging.vzmsgs"))) {
+                if (method.equalsIgnoreCase("INTENT") && !(android.provider.Telephony.Sms.getDefaultSmsPackage(this).equals("com.verizon.messaging.vzmsgs"))) {
                     invokeSMSIntent(phoneNumber, message, image);
                     // always passes success back to the app
                     callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
