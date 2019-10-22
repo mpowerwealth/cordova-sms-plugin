@@ -123,7 +123,7 @@ public class Sms extends CordovaPlugin {
                     callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, "SMS not supported on this platform"));
                     return;
                 }
-                if (method.equalsIgnoreCase("INTENT") && !(Telephony.Sms.getDefaultSmsPackage(this).equals("com.verizon.messaging.vzmsgs"))) {
+                if (method.equalsIgnoreCase("INTENT") && !(telephony.Sms.getDefaultSmsPackage(this).equals("com.verizon.messaging.vzmsgs"))) {
                     invokeSMSIntent(phoneNumber, message, image);
                     // always passes success back to the app
                     callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
