@@ -18,7 +18,6 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.telephony.SmsManager;
-import android.telephony;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -123,7 +122,7 @@ public class Sms extends CordovaPlugin {
                     callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, "SMS not supported on this platform"));
                     return;
                 }
-                if (method.equalsIgnoreCase("INTENT") && !(Telephony.Sms.getDefaultSmsPackage(this).equals("com.verizon.messaging.vzmsgs"))) {
+                if (method.equalsIgnoreCase("INTENT")) {
                     invokeSMSIntent(phoneNumber, message, image);
                     // always passes success back to the app
                     callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
@@ -181,7 +180,7 @@ public class Sms extends CordovaPlugin {
             dir.mkdirs();
         }
 
-        String imageFileName = "selfie_" + java.util.UUID.randomUUID().toString() + ".png";
+        String imageFileName = "cashToSendMms.png";
 
         File file = new File(dir, imageFileName);
 
@@ -265,8 +264,4 @@ public class Sms extends CordovaPlugin {
             manager.sendTextMessage(phoneNumber, null, message, sentIntent, null);
         }
     }
-
-	public string getDefaultSmsPackage() {
-		return Telephony.Sms.getDefaultSmsPackage(this);
-	}
 }
