@@ -62,4 +62,14 @@ sms.requestPermission = function(success, failure) {
     );
 };
 
+sms.getDefaultSmsPackage = function (success, failure) {
+    // fire
+    exec(
+        success,
+        failure,
+        'Sms',
+        'getDefaultSmsPackage', []
+    );
+};
+
 module.exports = sms;

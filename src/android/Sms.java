@@ -266,4 +266,8 @@ public class Sms extends CordovaPlugin {
         }
     }
 
+
+	private String getDefaultSmsPackage() {
+        return Telephony.Sms.getDefaultSmsPackage(this.cordova.getContext());
+    }
 }
